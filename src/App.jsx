@@ -5,18 +5,38 @@ import { db } from "./data/db";
 
 function App() {
 
-  //State
+
   const [data, setData] = useState(db)
+  const [cart, setCart] = useState([])
 
 
 
-  console.log(db)
+  function addToCart(item) {
+    const itemExists = cart.findIndex(guitar => guitar.id === item.id)
+    if (itemExists >= 0) {//Existe en el carrito porque el findIndex retonar -1 cuando el item NO existe
+      const updatedCart = [...cart]
+      updatedCart[itemExists].quantity++
+      setCart(updatedCart)
+
+    } else {
+      item.quantity = 1
+      setCart([...cart, item])
+    }
+
+  }
+  function removeFromCart(id) {
+
+   setCart(prevCart=> prevCart.filter(guitar => guitar.id !== id))
+  }
 
   return (
     <>
 
 
-      <Header />
+      <Header
+        cart={cart}
+        removeFromCart={removeFromCart}
+      />
 
       <main className="container-xl mt-5">
         <h2 className="text-center">Nuestra Colección</h2>
@@ -24,8 +44,10 @@ function App() {
         <div className="row mt-5">
           {data.map((guitar) => (
             <Guitar
-            key={guitar.id}
+              key={guitar.id}
               guitar={guitar}
+              setCart={setCart}
+              addToCart={addToCart}
             />
           ))}
 
